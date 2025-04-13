@@ -42,24 +42,35 @@ class OverlayWindow: NSWindow {
         // Make it appear and disappear with a fade animation
         self.animationBehavior = .utilityWindow
         
-        // Add visual effects view for background blur
-        setupVisualEffectsBackground()
+        // Simplified appearance with lighter visual effect
+        setupMinimalisticBackground()
     }
     
-    // Add a blurred background effect
-    private func setupVisualEffectsBackground() {
+    // Add a minimalistic background effect
+    private func setupMinimalisticBackground() {
         guard let contentView = contentView else { return }
         
-        // Create visual effect view with vibrancy
+        // Create visual effect view with dark appearance
         let visualEffectView = NSVisualEffectView()
-        visualEffectView.material = .hudWindow
+        visualEffectView.material = .dark // Dark material for a sleek look
         visualEffectView.state = .active
         visualEffectView.blendingMode = .behindWindow
         
-        // Configure the visual appearance
+        // Configure the visual appearance to be more modern
         visualEffectView.wantsLayer = true
-        visualEffectView.layer?.cornerRadius = 12
+        visualEffectView.layer?.cornerRadius = 12 // Rounded corners
         visualEffectView.layer?.masksToBounds = true
+        
+        // Add subtle border
+        visualEffectView.layer?.borderWidth = 0.5
+        visualEffectView.layer?.borderColor = NSColor(red: 0.3, green: 0.3, blue: 0.3, alpha: 1.0).cgColor
+        
+        // Add subtle shadow
+        contentView.wantsLayer = true
+        contentView.layer?.shadowColor = NSColor.black.withAlphaComponent(0.3).cgColor
+        contentView.layer?.shadowOffset = NSSize(width: 0, height: 3)
+        contentView.layer?.shadowRadius = 12
+        contentView.layer?.shadowOpacity = 1.0
         
         // Insert the visual effects view behind all other content
         visualEffectView.frame = contentView.bounds
@@ -74,9 +85,9 @@ class OverlayWindow: NSWindow {
         
         super.makeKeyAndOrderFront(sender)
         
-        // Animate to full opacity
+        // Animate to full opacity with slight scale effect
         NSAnimationContext.runAnimationGroup({ context in
-            context.duration = 0.2
+            context.duration = 0.15
             self.animator().alphaValue = 1.0
         })
     }
@@ -84,7 +95,7 @@ class OverlayWindow: NSWindow {
     // Add subtle animation when window disappears
     override func orderOut(_ sender: Any?) {
         NSAnimationContext.runAnimationGroup({ context in
-            context.duration = 0.2
+            context.duration = 0.15
             self.animator().alphaValue = 0.0
         }, completionHandler: {
             super.orderOut(sender)

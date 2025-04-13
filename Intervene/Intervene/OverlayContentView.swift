@@ -7,13 +7,11 @@
 
 import Foundation
 import SwiftUI
-import Combine
 
 // Define message types for the chat interface
 enum MessageType {
     case userMessage(String)
     case agentSteps([String])
-    case error(String)
 }
 
 // Message model for the chat
@@ -35,9 +33,6 @@ struct OverlayContentView: View {
     // Callback to send the confirmed steps to the backend
     var sendConfirmation: (_ steps: [String]) -> Void
     
-    // MARK: - Services
-    private let ollamaService = OllamaProcessService()
-    
     // MARK: - State Properties
     @State private var userPrompt: String = ""
     @State private var chatMessages: [ChatMessage] = []
@@ -46,20 +41,18 @@ struct OverlayContentView: View {
     @State private var currentExecutingStep: Int = 0
     @State private var executingSteps: [String] = []
     @State private var scrollID = UUID()
-    @State private var cancellables = Set<AnyCancellable>()
-    @State private var ollamaAvailable: Bool = false
-    @State private var showConnectionError: Bool = false
     
-    // Notion-inspired color scheme
-    private let primaryColor = Color(red: 0.13, green: 0.13, blue: 0.13)
-    private let accentColor = Color(red: 0.0, green: 0.45, blue: 0.85)
-    private let successColor = Color(red: 0.17, green: 0.67, blue: 0.45)
-    private let errorColor = Color(red: 0.91, green: 0.3, blue: 0.24)
-    private let surfaceColor = Color.white
-    private let textColor = Color(red: 0.2, green: 0.2, blue: 0.2)
-    private let subtleColor = Color(red: 0.5, green: 0.5, blue: 0.5)
-    private let borderColor = Color(red: 0.9, green: 0.9, blue: 0.9)
-    private let hoverColor = Color(red: 0.97, green: 0.97, blue: 0.97)
+    // Track focus for the input field
+    @FocusState private var isTextFieldFocused: Bool
+    
+    // Color palette based on Notion's light grey scheme
+    private let backgroundColor = Color(hex: "F7F6F3")
+    private let textColor = Color(hex: "37352F")
+    private let secondaryTextColor = Color(hex: "6B6B6B")
+    private let highlightColor = Color(hex: "2382E5")
+    private let successColor = Color(hex: "0F9D58")
+    private let dividerColor = Color(hex: "E8E8E8")
+    private let inputBackgroundColor = Color.white
     
     // Derived state for the latest agent steps
     private var latestAgentSteps: [String]? {
@@ -76,472 +69,303 @@ struct OverlayContentView: View {
     
     var body: some View {
         ZStack {
-            // Main content container with Notion-like design
+            // Background
+            backgroundColor.edgesIgnoringSafeArea(.all)
+            
             VStack(spacing: 0) {
-                // Header with title and controls
-                notionHeader
+                // Header with minimal design
+                HStack(spacing: 8) {
+                    // App icon - replaced with a safe fallback approach
+                    if let appIcon = NSImage(named: "logo") {
+                        Image(nsImage: appIcon)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 18, height: 18)
+                            .cornerRadius(4)
+                    } else {
+                        // Fallback to a system icon if app icon isn't available
+                        Image(systemName: "sparkles")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 16, height: 16)
+                    }
+                    
+                    Text(viewState == .chat ? "Intervene" : "Executing")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(textColor)
+                    
+                    Spacer()
+                    
+                    // Close button (X)
+                    Button(action: closeOverlay) {
+                        Image(systemName: "xmark")
+                            .foregroundColor(secondaryTextColor)
+                            .font(.system(size: 14))
+                            .frame(width: 24, height: 24)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(backgroundColor)
+                
+                Divider()
+                    .background(dividerColor)
                 
                 if viewState == .chat {
-                    notionChatView
+                    simpleChatView
                 } else {
-                    notionExecutionView
+                    executingView
                 }
             }
-            .background(surfaceColor)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .strokeBorder(borderColor, lineWidth: 1)
-            )
-            .shadow(color: Color.black.opacity(0.08), radius: 20, x: 0, y: 4)
-            .frame(width: 380, height: 500)
-            
-            // Connection error alert
-            if showConnectionError {
-                notionErrorAlert
-            }
-        }
-        .onAppear {
-            checkOllamaStatus()
+            .frame(width: 350, height: 450)
+            .background(backgroundColor)
+            .cornerRadius(12)
+            .shadow(color: Color(hex: "DDDDDD"), radius: 12, x: 0, y: 2)
         }
     }
     
-    // MARK: - Notion-like Header View
-    private var notionHeader: some View {
-        HStack(spacing: 16) {
-            // Title with minimal icon
-            HStack(spacing: 10) {
-                Image(systemName: "bolt")
-                    .font(.system(size: 16))
-                    .foregroundColor(accentColor)
-                
-                Text(viewState == .chat ? "Agent Assistant" : "Executing Steps")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(textColor)
-            }
-            
-            Spacer()
-            
-            // Ollama status indicator
-            HStack(spacing: 6) {
-                Circle()
-                    .fill(ollamaAvailable ? successColor : errorColor)
-                    .frame(width: 6, height: 6)
-                
-                Text(ollamaAvailable ? "Connected" : "Offline")
-                    .font(.system(size: 12))
-                    .foregroundColor(subtleColor)
-            }
-            .onTapGesture {
-                if !ollamaAvailable {
-                    showConnectionError = true
-                    // Auto-dismiss after 3 seconds
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        showConnectionError = false
-                    }
-                }
-            }
-            
-            // Close button
-            Button(action: closeOverlay) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 12))
-                    .foregroundColor(subtleColor)
-                    .padding(4)
-                    .background(Circle().fill(Color.clear))
-                    .contentShape(Circle())
-            }
-            .buttonStyle(PlainButtonStyle())
-            .padding(4)
-            .background(Circle().fill(Color.clear))
-            .contentShape(Circle())
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(surfaceColor)
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(borderColor),
-            alignment: .bottom
-        )
-    }
-    
-    // MARK: - Notion-like Chat View
-    private var notionChatView: some View {
+    // MARK: - Simple Chat View
+    private var simpleChatView: some View {
         VStack(spacing: 0) {
-            // Chat messages with minimal styling
+            // Chat messages
             ScrollViewReader { scrollProxy in
                 ScrollView {
                     LazyVStack(spacing: 0) {
-                        if chatMessages.isEmpty {
-                            // Empty state with minimal suggestion design
-                            notionEmptyStateView
-                        }
-                        
-                        ForEach(chatMessages) { message in
+                        // Use enumerated ForEach to add dividers between messages.
+                        ForEach(Array(chatMessages.enumerated()), id: \.element.id) { index, message in
                             VStack(spacing: 0) {
                                 // Message content
-                                notionMessageView(for: message)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 10)
-                                
-                                // Subtle divider
-                                if message.id != chatMessages.last?.id {
-                                    Divider()
-                                        .background(borderColor)
+                                Group {
+                                    switch message.type {
+                                    case .userMessage(let text):
+                                        // User message - right aligned
+                                        HStack {
+                                            Spacer()
+                                            Text(text)
+                                                .font(.system(size: 14))
+                                                .foregroundColor(textColor)
+                                                .multilineTextAlignment(.trailing)
+                                                .lineLimit(nil)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                                .padding(.horizontal, 12)
+                                                .padding(.vertical, 8)
+                                                .frame(maxWidth: 280, alignment: .trailing)
+                                        }
                                         .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        
+                                    case .agentSteps(let steps):
+                                        // Agent message - left aligned
+                                        VStack(alignment: .leading, spacing: 12) {
+                                            ForEach(steps.indices, id: \.self) { index in
+                                                HStack(alignment: .top, spacing: 8) {
+                                                    Text("\(index + 1).")
+                                                        .font(.system(size: 14))
+                                                        .foregroundColor(textColor)
+                                                    
+                                                    Text(steps[index])
+                                                        .font(.system(size: 14))
+                                                        .foregroundColor(textColor)
+                                                        .multilineTextAlignment(.leading)
+                                                        .lineLimit(nil)
+                                                        .fixedSize(horizontal: false, vertical: true)
+                                                }
+                                            }
+                                        }
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 12)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
                                 }
                             }
                             .id(message.id)
-                        }
-                        
-                        // Loading indicator
-                        if isLoading {
-                            notionLoadingIndicator
+                            
+                            // Add a horizontal translucent gray divider between messages
+                            if index < chatMessages.count - 1 {
+                                Divider()
+                                    .background(Color.gray.opacity(0.5))
+                                    .padding(.horizontal, 16)
+                            }
                         }
                         
                         // For automatic scrolling
                         Color.clear.frame(height: 1).id(scrollID)
-                    }
-                    .padding(.vertical, 10)
-                }
-                .onChange(of: scrollID) { oldValue, newValue in
-                    scrollToBottom(proxy: scrollProxy)
-                }
-            }
-            
-            // Show Intervene button if we have agent steps
-            if let steps = latestAgentSteps, !steps.isEmpty {
-                notionInterveneButton(steps: steps)
-            }
-            
-            // Input area
-            notionInputArea
-        }
-    }
-    
-    // Notion-like empty state view
-    private var notionEmptyStateView: some View {
-        VStack(spacing: 20) {
-            Spacer()
-            
-            Image(systemName: "text.bubble")
-                .font(.system(size: 32))
-                .foregroundColor(subtleColor.opacity(0.4))
-            
-            Text("What would you like help with?")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(textColor)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                notionSuggestionButton("Organize my emails and update spreadsheets")
-                notionSuggestionButton("Schedule meetings and prepare notes")
-                notionSuggestionButton("Research a topic and create a summary")
-            }
-            .frame(maxWidth: 300)
-            
-            Spacer()
-        }
-        .padding(.bottom, 40)
-    }
-    
-    // Notion-style suggestion button
-    private func notionSuggestionButton(_ text: String) -> some View {
-        Button(action: {
-            userPrompt = text
-            sendMessage()
-        }) {
-            HStack {
-                Text(text)
-                    .font(.system(size: 14))
-                    .foregroundColor(textColor)
-                    .lineLimit(1)
-                
-                Spacer()
-                
-                Image(systemName: "arrow.right.circle")
-                    .font(.system(size: 12))
-                    .foregroundColor(accentColor)
-            }
-            .padding(.vertical, 6)
-            .padding(.horizontal, 10)
-            .background(hoverColor)
-            .cornerRadius(4)
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-    
-    // Notion-style message view
-    private func notionMessageView(for message: ChatMessage) -> some View {
-        Group {
-            switch message.type {
-            case .userMessage(let text):
-                // User message with icon
-                HStack(alignment: .top, spacing: 10) {
-                    // User icon
-                    ZStack {
-                        Circle()
-                            .fill(accentColor.opacity(0.1))
-                            .frame(width: 24, height: 24)
                         
-                        Text("U")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(accentColor)
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("You")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(subtleColor)
-                        
-                        Text(text)
-                            .font(.system(size: 14))
-                            .foregroundColor(textColor)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                
-            case .agentSteps(let steps):
-                // Agent steps with checkbox styling
-                HStack(alignment: .top, spacing: 10) {
-                    // Agent icon
-                    ZStack {
-                        Circle()
-                            .fill(primaryColor.opacity(0.05))
-                            .frame(width: 24, height: 24)
-                        
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 10))
-                            .foregroundColor(accentColor)
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Agent")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(subtleColor)
-                        
-                        ForEach(steps.indices, id: \.self) { index in
-                            HStack(alignment: .top, spacing: 8) {
-                                // Checkbox style
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 3)
-                                        .stroke(subtleColor.opacity(0.5), lineWidth: 1)
-                                        .frame(width: 16, height: 16)
-                                }
-                                
-                                Text(steps[index])
-                                    .font(.system(size: 14))
-                                    .foregroundColor(textColor)
-                                    .fixedSize(horizontal: false, vertical: true)
+                        if isLoading {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                    .scaleEffect(0.7)
+                                Spacer()
                             }
+                            .padding()
                         }
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                
-            case .error(let errorMessage):
-                // Error message with Notion styling
-                HStack(spacing: 8) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .foregroundColor(errorColor)
-                        .font(.system(size: 14))
-                    
-                    Text(errorMessage)
-                        .font(.system(size: 14))
-                        .foregroundColor(textColor)
-                        .multilineTextAlignment(.leading)
+                .onChange(of: scrollID) { _, _ in
+                    scrollToBottom(proxy: scrollProxy)
                 }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .background(errorColor.opacity(0.05))
-                .cornerRadius(4)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 4)
-                        .stroke(errorColor.opacity(0.2), lineWidth: 1)
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
-        }
-    }
-    
-    // Loading indicator with Notion-like simplicity
-    private var notionLoadingIndicator: some View {
-        HStack(spacing: 6) {
-            ForEach(0..<3) { index in
-                Circle()
-                    .fill(accentColor.opacity(0.4))
-                    .frame(width: 6, height: 6)
-                    .scaleEffect(isLoading ? 1.0 : 0.5)
-                    .opacity(isLoading ? 1.0 : 0.3)
-                    .animation(
-                        Animation.easeInOut(duration: 0.5)
-                            .repeatForever(autoreverses: true)
-                            .delay(Double(index) * 0.2),
-                        value: isLoading
-                    )
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-    
-    // Notion-style Intervene button
-    private func notionInterveneButton(steps: [String]) -> some View {
-        Button(action: {
-            executingSteps = steps
-            currentExecutingStep = 0
-            viewState = .executing
-            // Start the execution process
-            sendConfirmation(steps)
-        }) {
-            HStack(spacing: 6) {
-                Text("Intervene")
-                    .font(.system(size: 14, weight: .medium))
-                
-                Image(systemName: "arrow.right")
-                    .font(.system(size: 12))
-            }
-            .foregroundColor(.white)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 16)
-            .background(accentColor)
-            .cornerRadius(4)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(surfaceColor)
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(borderColor),
-            alignment: .top
-        )
-    }
-    
-    // Notion-style input area
-    private var notionInputArea: some View {
-        VStack(spacing: 8) {
-            // Connection warning
-            if !ollamaAvailable {
-                HStack(spacing: 6) {
-                    Image(systemName: "exclamationmark.circle")
-                        .font(.system(size: 12))
-                        .foregroundColor(errorColor)
+            .background(backgroundColor)
+            
+            // "Confirm" button if we have agent steps
+            if let steps = latestAgentSteps, !steps.isEmpty {
+                VStack(spacing: 16) {
+                    Divider()
+                        .background(dividerColor)
                     
-                    Text("Ollama not connected")
-                        .font(.system(size: 12))
-                        .foregroundColor(errorColor)
+                    Button(action: {
+                        executingSteps = steps
+                        currentExecutingStep = 0
+                        viewState = .executing
+                        // Start the execution process
+                        sendConfirmation(steps)
+                    }) {
+                        Text("Confirm")
+                            .font(.system(size: 14, weight: .medium))
+                            .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity)
+                            .background(highlightColor)
+                            .foregroundColor(.white)
+                            .cornerRadius(6)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 12)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
             }
             
-            // Input field and button
-            HStack(spacing: 12) {
-                // Text field with Notion styling
-                TextField("Enter your instructions...", text: $userPrompt)
-                    .font(.system(size: 14))
-                    .foregroundColor(textColor)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(hoverColor)
-                    .cornerRadius(4)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(borderColor, lineWidth: 1)
-                    )
-                    .disabled(isLoading || !ollamaAvailable)
-                    .onSubmit {
-                        sendMessage()
-                    }
+            // Input area: Single-line TextField with custom border behavior.
+            VStack(spacing: 0) {
+                Divider()
+                    .background(dividerColor)
                 
-                // Send button
-                Button(action: sendMessage) {
-                    Image(systemName: "arrow.up")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.white)
-                        .padding(8)
-                        .background(
-                            Circle()
-                                .fill(userPrompt.isEmpty || isLoading || !ollamaAvailable
-                                     ? subtleColor
-                                     : accentColor)
-                        )
+                HStack(spacing: 12) {
+                    // Improved text field with clean styling
+                    ZStack(alignment: .leading) {
+                        if userPrompt.isEmpty {
+                            Text("What would you like me to do?")
+                                .font(.system(size: 14))
+                                .foregroundColor(secondaryTextColor.opacity(0.7))
+                                .padding(.leading, 8)
+                        }
+                        
+                        TextField("", text: $userPrompt)
+                            .font(.system(size: 14))
+                            .foregroundColor(textColor)
+                            .textFieldStyle(PlainTextFieldStyle())
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 8)
+                            .disabled(isLoading)
+                            .onSubmit {
+                                sendMessage()
+                            }
+                    }
+                    .frame(height: 36)
+                    .background(inputBackgroundColor)
+                    .cornerRadius(6)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(dividerColor, lineWidth: 1)
+                    )
+                    
+                    Button(action: sendMessage) {
+                        Image(systemName: "arrow.up.circle.fill")
+                            .font(.system(size: 24))
+                            .foregroundColor(userPrompt.isEmpty || isLoading ? secondaryTextColor : highlightColor)
+                    }
+                    .disabled(userPrompt.isEmpty || isLoading)
+                    .buttonStyle(PlainButtonStyle())
                 }
-                .disabled(userPrompt.isEmpty || isLoading || !ollamaAvailable)
-                .buttonStyle(PlainButtonStyle())
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(backgroundColor)
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 12)
-            .padding(.top, 4)
-            .background(surfaceColor)
-            .overlay(
-                Rectangle()
-                    .frame(height: 1)
-                    .foregroundColor(borderColor),
-                alignment: .top
-            )
         }
     }
     
-    // MARK: - Notion-like Execution View
-    private var notionExecutionView: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Progress info with Notion simplicity
+    // MARK: - Executing View
+    private var executingView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Title and progress
             HStack {
-                Text("Executing steps")
+                Text("Step \(currentExecutingStep + 1) of \(executingSteps.count)")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(textColor)
                 
                 Spacer()
                 
-                // Simple progress counter
-                Text("\(currentExecutingStep)/\(executingSteps.count)")
-                    .font(.system(size: 14))
-                    .foregroundColor(subtleColor)
+                // Loading indicator for current step
+                if currentExecutingStep < executingSteps.count {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .scaleEffect(0.7)
+                }
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.top, 12)
             
-            // Clean progress bar
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    // Background
-                    Rectangle()
-                        .fill(borderColor)
-                        .frame(height: 4)
-                    
-                    // Fill
-                    Rectangle()
-                        .fill(accentColor)
-                        .frame(width: geo.size.width * CGFloat(max(CGFloat(currentExecutingStep) / CGFloat(executingSteps.count), 0.0)), height: 4)
-                }
-            }
-            .frame(height: 4)
-            
-            // Steps list with clean styling
+            // Steps list
             ScrollView {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 0) {
                     ForEach(executingSteps.indices, id: \.self) { index in
-                        notionStepView(for: index)
+                        HStack(alignment: .center, spacing: 12) {
+                            // Simple circle indicator
+                            Circle()
+                                .fill(index < currentExecutingStep ? successColor
+                                      : (index == currentExecutingStep ? highlightColor
+                                      : Color.gray.opacity(0.3)))
+                                .frame(width: 18, height: 18)
+                            
+                            Text(executingSteps[index])
+                                .font(.system(size: 14))
+                                .foregroundColor(index < currentExecutingStep
+                                                 ? textColor.opacity(0.7)
+                                                 : (index == currentExecutingStep
+                                                    ? textColor
+                                                    : textColor.opacity(0.5)))
+                                .strikethrough(index < currentExecutingStep, color: textColor.opacity(0.5))
+                                .lineLimit(2)
+                        }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
             }
+            .background(backgroundColor)
             
             Spacer()
             
-            // Return to chat button or current step info
+            // Return to chat button (when all steps are complete)
             if currentExecutingStep >= executingSteps.count {
-                // All steps complete
-                notionCompletionView
+                VStack(spacing: 8) {
+                    Text("All steps completed")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(successColor)
+                    
+                    Button(action: {
+                        viewState = .chat
+                    }) {
+                        Text("Return to Chat")
+                            .font(.system(size: 14, weight: .medium))
+                            .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity)
+                            .background(successColor)
+                            .foregroundColor(.white)
+                            .cornerRadius(6)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
             } else {
-                // Still executing
-                notionStepProgressView
+                Text("Executing...")
+                    .font(.system(size: 12))
+                    .foregroundColor(secondaryTextColor)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
             }
         }
         .onAppear {
@@ -549,227 +373,63 @@ struct OverlayContentView: View {
         }
     }
     
-    // Notion-style step view in execution mode
-    private func notionStepView(for index: Int) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            // Status indicator
-            ZStack {
-                RoundedRectangle(cornerRadius: 3)
-                    .stroke(index < currentExecutingStep ? successColor : (index == currentExecutingStep ? accentColor : subtleColor.opacity(0.5)), lineWidth: 1)
-                    .frame(width: 16, height: 16)
-                
-                if index < currentExecutingStep {
-                    // Completed
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(successColor)
-                } else if index == currentExecutingStep {
-                    // In progress
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: accentColor))
-                        .scaleEffect(0.5)
-                }
-            }
-            
-            // Step text
-            Text(executingSteps[index])
-                .font(.system(size: 14))
-                .foregroundColor(index <= currentExecutingStep ? textColor : subtleColor)
-                .strikethrough(index < currentExecutingStep, color: subtleColor)
-        }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 8)
-        .background(index == currentExecutingStep ? hoverColor : Color.clear)
-        .cornerRadius(4)
-        .animation(.easeInOut(duration: 0.2), value: currentExecutingStep)
-    }
-    
-    // Current step progress view
-    private var notionStepProgressView: some View {
-        HStack(spacing: 8) {
-            if currentExecutingStep < executingSteps.count {
-                Text("Running: \(executingSteps[currentExecutingStep])")
-                    .font(.system(size: 13))
-                    .foregroundColor(subtleColor)
-                    .lineLimit(1)
-                
-                Spacer()
-                
-                // Simple spinner
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: accentColor))
-                    .scaleEffect(0.6)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(surfaceColor)
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(borderColor),
-            alignment: .top
-        )
-    }
-    
-    // Completion view when all steps are done
-    private var notionCompletionView: some View {
-        VStack(spacing: 12) {
-            // Success indicator
-            HStack(spacing: 8) {
-                Image(systemName: "checkmark.circle")
-                    .font(.system(size: 16))
-                    .foregroundColor(successColor)
-                
-                Text("All steps completed")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(textColor)
-            }
-            
-            // Return to chat button
-            Button(action: {
-                viewState = .chat
-            }) {
-                Text("Return to Chat")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.white)
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 16)
-                    .background(accentColor)
-                    .cornerRadius(4)
-            }
-            .buttonStyle(PlainButtonStyle())
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(surfaceColor)
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(borderColor),
-            alignment: .top
-        )
-    }
-    
-    // Error alert with Notion styling
-    private var notionErrorAlert: some View {
-        VStack(spacing: 12) {
-            // Title
-            Text("Connection Error")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(textColor)
-            
-            // Message
-            Text("Make sure Ollama is running on your system")
-                .font(.system(size: 13))
-                .foregroundColor(subtleColor)
-                .multilineTextAlignment(.center)
-            
-            // Retry button
-            Button(action: {
-                checkOllamaStatus()
-                showConnectionError = false
-            }) {
-                Text("Retry")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 6)
-                    .background(accentColor)
-                    .cornerRadius(4)
-            }
-            .buttonStyle(PlainButtonStyle())
-        }
-        .padding(20)
-        .background(surfaceColor)
-        .cornerRadius(6)
-        .overlay(
-            RoundedRectangle(cornerRadius: 6)
-                .stroke(borderColor, lineWidth: 1)
-        )
-        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 4)
-        .transition(.opacity)
-        .zIndex(100)
-    }
-    
     // MARK: - Methods
     
-    private func checkOllamaStatus() {
-        ollamaService.checkStatus()
-            .receive(on: DispatchQueue.main)
-            .sink(
-                receiveCompletion: { completion in
-                    if case .failure(_) = completion {
-                        self.ollamaAvailable = false
-                    }
-                },
-                receiveValue: { isAvailable in
-                    self.ollamaAvailable = isAvailable
-                }
-            )
-            .store(in: &cancellables)
-    }
-    
     private func sendMessage() {
-        guard !userPrompt.isEmpty && !isLoading && ollamaAvailable else { return }
-        
-        let message = userPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !userPrompt.isEmpty && !isLoading else { return }
         
         // Add user message to chat
-        chatMessages.append(ChatMessage(type: .userMessage(message)))
+        chatMessages.append(ChatMessage(type: .userMessage(userPrompt)))
         
-        // Clear the prompt
+        // Save and clear the prompt
+        let prompt = userPrompt
         userPrompt = ""
         isLoading = true
         
         // Update scroll position
         scrollID = UUID()
         
-        // Check if we have previous agent steps (for refinement)
-        if let lastSteps = latestAgentSteps, !lastSteps.isEmpty {
-            // This is a refinement request
-            ollamaService.refineSteps(currentSteps: lastSteps, userFeedback: message)
-                .receive(on: DispatchQueue.main)
-                .sink(
-                    receiveCompletion: { completion in
-                        self.isLoading = false
-                        if case let .failure(error) = completion {
-                            self.chatMessages.append(ChatMessage(type: .error("Error: \(error.localizedDescription)")))
-                            self.scrollID = UUID()
-                        }
-                    },
-                    receiveValue: { steps in
-                        self.chatMessages.append(ChatMessage(type: .agentSteps(steps)))
-                        self.isLoading = false
-                        self.scrollID = UUID()
-                    }
-                )
-                .store(in: &cancellables)
-        } else {
-            // This is an initial request
-            ollamaService.generateSteps(from: message)
-                .receive(on: DispatchQueue.main)
-                .sink(
-                    receiveCompletion: { completion in
-                        self.isLoading = false
-                        if case let .failure(error) = completion {
-                            self.chatMessages.append(ChatMessage(type: .error("Error: \(error.localizedDescription)")))
-                            self.scrollID = UUID()
-                        }
-                    },
-                    receiveValue: { steps in
-                        self.chatMessages.append(ChatMessage(type: .agentSteps(steps)))
-                        self.isLoading = false
-                        self.scrollID = UUID()
-                    }
-                )
-                .store(in: &cancellables)
+        // Simulate agent response
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            let steps = self.generateStepsBasedOn(prompt)
+            self.chatMessages.append(ChatMessage(type: .agentSteps(steps)))
+            self.isLoading = false
+            self.scrollID = UUID()
         }
     }
     
     private func scrollToBottom(proxy: ScrollViewProxy) {
         withAnimation(.easeOut(duration: 0.2)) {
             proxy.scrollTo(scrollID, anchor: .bottom)
+        }
+    }
+    
+    private func generateStepsBasedOn(_ prompt: String) -> [String] {
+        // This would be replaced with actual API call to your backend agent
+        if prompt.lowercased().contains("email") {
+            return [
+                "Scan inbox for unread messages",
+                "Draft replies based on your guidelines",
+                "Update deal sheet with new data",
+                "Log activity for record keeping",
+                "Send notification when complete"
+            ]
+        } else if prompt.lowercased().contains("meeting") {
+            return [
+                "Check your calendar for availability",
+                "Draft meeting agenda",
+                "Send invites to participants",
+                "Prepare meeting notes template",
+                "Set up reminders"
+            ]
+        } else {
+            return [
+                "Analyze your request: \"\(prompt)\"",
+                "Gather relevant information",
+                "Process data according to guidelines",
+                "Prepare results for review",
+                "Finalize task and generate report"
+            ]
         }
     }
     
@@ -790,6 +450,35 @@ struct OverlayContentView: View {
     }
 }
 
+// MARK: - Color from Hex
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (1, 1, 1, 0)
+        }
+        
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue:  Double(b) / 255,
+            opacity: Double(a) / 255
+        )
+    }
+}
+
+// MARK: - Preview
 struct OverlayContentView_Previews: PreviewProvider {
     static var previews: some View {
         OverlayContentView(
@@ -800,5 +489,6 @@ struct OverlayContentView_Previews: PreviewProvider {
             }
         )
         .previewLayout(.sizeThatFits)
+        .background(Color.gray) // For better preview contrast
     }
 }

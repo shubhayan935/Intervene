@@ -146,7 +146,6 @@ class OllamaService {
                         steps.append(trimmedLine)
                     }
                 }
-                
                 return steps
             }
             .eraseToAnyPublisher()

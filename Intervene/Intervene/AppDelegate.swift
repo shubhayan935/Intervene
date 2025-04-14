@@ -8,10 +8,13 @@
 import Foundation
 import Cocoa
 import SwiftUI
+import Combine
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
     var overlayWindow: OverlayWindow?
+    private var cancellables = Set<AnyCancellable>()
+    private let stepsExecutionService = StepsExecutionService()
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Create a status bar item with a square length for an icon
@@ -103,28 +106,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // MARK: - Backend communication
     private func sendStepsToBackend(_ steps: [String]) {
-        // In a real app, you would send these steps to your backend:
-        // 1. Make an API call to your agent system
-        // 2. Pass the confirmed steps for execution
-        // 3. Handle success/failure responses
-        
         print("Sending steps to backend:")
         steps.forEach { step in
             print("- \(step)")
         }
         
-        // In the real implementation, you would connect to your Ollama service here
-        // Example:
-        // let ollamaService = OllamaService()
-        // ollamaService.executeSteps(steps)
-        //   .sink(receiveCompletion: { completion in
-        //     // Handle completion
-        //   }, receiveValue: { result in
-        //     // Handle result
-        //   })
-        //   .store(in: &cancellables)
+        stepsExecutionService.executeSteps(steps)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    print("Successfully sent steps to backend")
+                case .failure(let error):
+                    print("Failed to send steps to backend: \(error)")
+                    // Show error to user if needed
+                }
+            }, receiveValue: { success in
+                print("Backend accepted steps: \(success)")
+            })
+            .store(in: &cancellables)
         
-        // Keep the window open while executing in the real implementation
-        // The execution status is now shown in the UI
+        // Keep the window open while executing
+        // The execution status will be updated via the WebSocket connection
     }
 }

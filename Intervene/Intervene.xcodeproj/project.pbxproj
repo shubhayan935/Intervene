@@ -18,6 +18,7 @@
 		B44BE54F2DAB0E3D00DEDC4A /* OverlayContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44BE54E2DAB0E3D00DEDC4A /* OverlayContentView.swift */; };
 		B44BE5512DAB255200DEDC4A /* OllamaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44BE5502DAB255200DEDC4A /* OllamaService.swift */; };
 		B44BE5542DAB2C4F00DEDC4A /* OllamaProcessService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44BE5532DAB2C4F00DEDC4A /* OllamaProcessService.swift */; };
+		B44BE5582DAB6B1C00DEDC4A /* StepsExecutionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44BE5572DAB6B1C00DEDC4A /* StepsExecutionService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		B44BE5502DAB255200DEDC4A /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
 		B44BE5522DAB2C0C00DEDC4A /* intervene.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = intervene.entitlements; sourceTree = "<group>"; };
 		B44BE5532DAB2C4F00DEDC4A /* OllamaProcessService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaProcessService.swift; sourceTree = "<group>"; };
+		B44BE5572DAB6B1C00DEDC4A /* StepsExecutionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsExecutionService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +75,7 @@
 				B44BE5382DAB084800DEDC4A /* ContentView.swift */,
 				B44BE5502DAB255200DEDC4A /* OllamaService.swift */,
 				B44BE5532DAB2C4F00DEDC4A /* OllamaProcessService.swift */,
+				B44BE5572DAB6B1C00DEDC4A /* StepsExecutionService.swift */,
 				B44BE53A2DAB084A00DEDC4A /* Assets.xcassets */,
 				B44BE5522DAB2C0C00DEDC4A /* intervene.entitlements */,
 				B44BE53F2DAB084A00DEDC4A /* Persistence.swift */,
@@ -166,6 +169,7 @@
 				B44BE54B2DAB0ACA00DEDC4A /* AppDelegate.swift in Sources */,
 				B44BE54D2DAB0C0600DEDC4A /* OverlayWindow.swift in Sources */,
 				B44BE5512DAB255200DEDC4A /* OllamaService.swift in Sources */,
+				B44BE5582DAB6B1C00DEDC4A /* StepsExecutionService.swift in Sources */,
 				B44BE54F2DAB0E3D00DEDC4A /* OverlayContentView.swift in Sources */,
 				B44BE5372DAB084800DEDC4A /* InterveneApp.swift in Sources */,
 				B44BE5542DAB2C4F00DEDC4A /* OllamaProcessService.swift in Sources */,

@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
 // Define message types for the chat interface
 enum MessageType {
@@ -27,6 +28,36 @@ enum OverlayViewState {
     case executing
 }
 
+// Service provider class to manage execution service and cancellables
+class ExecutionServiceProvider: ObservableObject {
+    let stepsExecutionService = StepsExecutionService()
+    var cancellables = Set<AnyCancellable>()
+    
+    func connectToStepUpdates(updateStep: @escaping (StepUpdate) -> Void, fallbackToSimulation: @escaping () -> Void) {
+        stepsExecutionService.connectToStepUpdates()
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    print("WebSocket connection closed normally")
+                case .failure(let error):
+                    print("WebSocket error: \(error)")
+                    // Fall back to simulated execution if websocket fails
+                    fallbackToSimulation()
+                }
+            }, receiveValue: { stepUpdate in
+                DispatchQueue.main.async {
+                    updateStep(stepUpdate)
+                }
+            })
+            .store(in: &cancellables)
+    }
+    
+    func cleanupConnections() {
+        stepsExecutionService.disconnectFromStepUpdates()
+        cancellables.removeAll()
+    }
+}
+
 struct OverlayContentView: View {
     // Callback to dismiss the overlay
     var closeOverlay: () -> Void
@@ -41,6 +72,9 @@ struct OverlayContentView: View {
     @State private var currentExecutingStep: Int = 0
     @State private var executingSteps: [String] = []
     @State private var scrollID = UUID()
+    
+    // Backend services
+    @StateObject private var serviceProvider = ExecutionServiceProvider()
     
     // Track focus for the input field
     @FocusState private var isTextFieldFocused: Bool
@@ -122,6 +156,9 @@ struct OverlayContentView: View {
             .background(backgroundColor)
             .cornerRadius(12)
             .shadow(color: Color(hex: "DDDDDD"), radius: 12, x: 0, y: 2)
+            .onDisappear {
+                serviceProvider.cleanupConnections()
+            }
         }
     }
     
@@ -346,6 +383,7 @@ struct OverlayContentView: View {
                         .foregroundColor(successColor)
                     
                     Button(action: {
+                        serviceProvider.cleanupConnections()
                         viewState = .chat
                     }) {
                         Text("Return to Chat")
@@ -369,7 +407,7 @@ struct OverlayContentView: View {
             }
         }
         .onAppear {
-            simulateExecution()
+            startRealExecution()
         }
     }
     
@@ -433,6 +471,20 @@ struct OverlayContentView: View {
         }
     }
     
+    // MARK: - Real execution methods
+    
+    private func startRealExecution() {
+        serviceProvider.connectToStepUpdates(
+            updateStep: { stepUpdate in
+                self.currentExecutingStep = stepUpdate.completedStepIndex + 1
+            },
+            fallbackToSimulation: {
+                self.simulateExecution()
+            }
+        )
+    }
+    
+    // Kept as a fallback if real execution fails
     private func simulateExecution() {
         guard currentExecutingStep < executingSteps.count else { return }
         

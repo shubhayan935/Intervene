@@ -90,7 +90,7 @@ export default function PricingTable() {
               pricing
             </span>
           </h2>
-          <p className="mt-4 text-lg text-white/70">Choose the plan that's right for you or your team</p>
+          <p className="mt-4 text-lg text-white/70">Choose the plan that&apos;s right for you or your team</p>
         </div>
 
         <div ref={ref} className="mt-16">

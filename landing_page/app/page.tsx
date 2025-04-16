@@ -58,7 +58,7 @@ export default function LandingPage() {
                 <span>INTERVENE</span>
               </Link>
               <p className="text-sm text-white/70">
-                Tesla Autopilot for desktops. Built entirely on-device using Meta's Llama Stack for fast, private,
+                Tesla Autopilot for desktops. Built entirely on-device using Meta&apos;s Llama Stack for fast, private,
                 agentic task execution.
               </p>
             </div>

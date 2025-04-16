@@ -95,7 +95,7 @@ export default function TestimonialsSection() {
                     <Star key={i} className="h-4 w-4 fill-purple-500 text-purple-500" />
                   ))}
                 </div>
-                <p className="mb-4 text-white/90">"{testimonial.quote}"</p>
+                <p className="mb-4 text-white/90">&quot;{testimonial.quote}&quot;</p>
                 <div className="flex items-center gap-3">
                   <Image
                     src={testimonial.avatar || "/placeholder.svg"}

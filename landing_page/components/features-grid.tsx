@@ -148,7 +148,7 @@ export default function FeaturesGrid() {
             </span>
           </h2>
           <p className="mt-4 text-lg text-white/70">
-            Built entirely on-device using Meta's Llama Stack for fast, private, agentic task execution.
+            Built entirely on-device using Meta&apos;s Llama Stack for fast, private, agentic task execution.
           </p>
         </div>
 
@@ -241,7 +241,7 @@ export default function FeaturesGrid() {
 
               <div className="mt-12">
                 <p className="text-xl text-white/80">
-                  It's not anybody's fault. Desktop workflows haven't changed in decades.
+                  It&apos;s not anybody&apos;s fault. Desktop workflows haven&apos;t changed in decades.
                 </p>
                 <p className="mt-2 text-xl text-white/80">With Intervene, this all changes.</p>
               </div>

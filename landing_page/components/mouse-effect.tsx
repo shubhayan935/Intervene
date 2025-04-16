@@ -1,84 +1,105 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import { motion, useSpring, useMotionValue } from "framer-motion"
 
 export default function MouseEffect() {
+  // Create motion values at the top level of the component
   const cursorX = useMotionValue(0)
   const cursorY = useMotionValue(0)
-
-  // Create smoother spring-based following for the cursor effects
+  
+  // Create spring configs
   const springConfig = { damping: 25, stiffness: 300 }
+  
+  // Create springs at the top level
   const cursorXSpring = useSpring(cursorX, springConfig)
   const cursorYSpring = useSpring(cursorY, springConfig)
-
+  
   // For the larger glow effect
   const glowX = useSpring(cursorX, { ...springConfig, damping: 40, stiffness: 100 })
   const glowY = useSpring(cursorY, { ...springConfig, damping: 40, stiffness: 100 })
-
-  // For the trail effect
-  const trailElements = 5
-  const trailRefs = useRef(
-    Array.from({ length: trailElements }).map(() => ({
-      x: 0,
-      y: 0,
-    })),
-  )
-
-  const trailXMVs = useRef(Array.from({ length: trailElements }).map(() => useMotionValue(0)))
-  const trailYMVs = useRef(Array.from({ length: trailElements }).map(() => useMotionValue(0)))
-
-  const trailXSprings = useRef(
-    Array.from({ length: trailElements }).map((_, i) => useSpring(trailXMVs.current[i], springConfig)),
-  )
-  const trailYSprings = useRef(
-    Array.from({ length: trailElements }).map((_, i) => useSpring(trailYMVs.current[i], springConfig)),
-  )
-
+  
   const [cursorVariant, setCursorVariant] = useState("default")
   const [isHovering, setIsHovering] = useState(false)
-
+  
+  // For the trail effect
+  const trailElements = 5
+  
+  // Pre-create all motion values at component top level
+  const trailMotionX = [
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0)
+  ]
+  
+  const trailMotionY = [
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0)
+  ]
+  
+  // Pre-create all springs at component top level
+  const trailSpringsX = [
+    useSpring(trailMotionX[0], { ...springConfig, stiffness: 300 - 0 * 40, damping: 20 + 0 * 5 }),
+    useSpring(trailMotionX[1], { ...springConfig, stiffness: 300 - 1 * 40, damping: 20 + 1 * 5 }),
+    useSpring(trailMotionX[2], { ...springConfig, stiffness: 300 - 2 * 40, damping: 20 + 2 * 5 }),
+    useSpring(trailMotionX[3], { ...springConfig, stiffness: 300 - 3 * 40, damping: 20 + 3 * 5 }),
+    useSpring(trailMotionX[4], { ...springConfig, stiffness: 300 - 4 * 40, damping: 20 + 4 * 5 })
+  ]
+  
+  const trailSpringsY = [
+    useSpring(trailMotionY[0], { ...springConfig, stiffness: 300 - 0 * 40, damping: 20 + 0 * 5 }),
+    useSpring(trailMotionY[1], { ...springConfig, stiffness: 300 - 1 * 40, damping: 20 + 1 * 5 }),
+    useSpring(trailMotionY[2], { ...springConfig, stiffness: 300 - 2 * 40, damping: 20 + 2 * 5 }),
+    useSpring(trailMotionY[3], { ...springConfig, stiffness: 300 - 3 * 40, damping: 20 + 3 * 5 }),
+    useSpring(trailMotionY[4], { ...springConfig, stiffness: 300 - 4 * 40, damping: 20 + 4 * 5 })
+  ]
+  
   useEffect(() => {
     const mouseMove = (e: MouseEvent) => {
       cursorX.set(e.clientX)
       cursorY.set(e.clientY)
-
+      
       // Update trail positions with delay
       setTimeout(() => {
-        trailRefs.current.forEach((trail, i) => {
-          trailXMVs.current[i].set(e.clientX)
-          trailYMVs.current[i].set(e.clientY)
-        })
+        for (let i = 0; i < trailElements; i++) {
+          trailMotionX[i].set(e.clientX)
+          trailMotionY[i].set(e.clientY)
+        }
       }, 100) // Slight delay for trail effect
     }
-
+    
     window.addEventListener("mousemove", mouseMove)
-
+    
     return () => {
       window.removeEventListener("mousemove", mouseMove)
     }
-  }, [cursorX, cursorY])
-
+  }, [cursorX, cursorY, trailMotionX, trailMotionY]) // Added missing dependencies
+  
   useEffect(() => {
     const interactiveElements = document.querySelectorAll(
-      "a, button, h1, h2, h3, h4, h5, h6, input, [role='button'], .interactive",
+      "a, button, h1, h2, h3, h4, h5, h6, input, [role='button'], .interactive"
     )
-
+    
     const mouseEnter = () => {
       setCursorVariant("hover")
       setIsHovering(true)
     }
-
+    
     const mouseLeave = () => {
       setCursorVariant("default")
       setIsHovering(false)
     }
-
+    
     interactiveElements.forEach((element) => {
       element.addEventListener("mouseenter", mouseEnter)
       element.addEventListener("mouseleave", mouseLeave)
     })
-
+    
     return () => {
       interactiveElements.forEach((element) => {
         element.removeEventListener("mouseenter", mouseEnter)
@@ -86,7 +107,7 @@ export default function MouseEffect() {
       })
     }
   }, [])
-
+  
   const variants = {
     default: {
       height: 32,
@@ -102,7 +123,7 @@ export default function MouseEffect() {
       mixBlendMode: "screen" as const,
     },
   }
-
+  
   return (
     <>
       {/* Main cursor */}
@@ -123,7 +144,7 @@ export default function MouseEffect() {
           mass: 0.5,
         }}
       />
-
+      
       {/* Cursor glow effect */}
       <motion.div
         className="pointer-events-none fixed left-0 top-0 z-40 h-40 w-40 rounded-full bg-gradient-radial from-purple-500/20 via-violet-500/10 to-transparent blur-xl"
@@ -140,15 +161,15 @@ export default function MouseEffect() {
           scale: { duration: 0.4 },
         }}
       />
-
+      
       {/* Cursor trails */}
-      {trailRefs.current.map((trail, i) => (
+      {Array.from({ length: trailElements }).map((_, i) => (
         <motion.div
           key={i}
           className="pointer-events-none fixed left-0 top-0 z-30 h-2 w-2 rounded-full bg-purple-400"
           style={{
-            x: trailXSprings.current[i],
-            y: trailYSprings.current[i],
+            x: trailSpringsX[i],
+            y: trailSpringsY[i],
             translateX: "-50%",
             translateY: "-50%",
             opacity: 0.3 - i * 0.05,
@@ -163,7 +184,7 @@ export default function MouseEffect() {
           }}
         />
       ))}
-
+      
       {/* Magnetic effect for buttons - applied via CSS */}
       <style jsx global>{`
         a, button, .magnetic {

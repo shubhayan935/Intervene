@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { FileText, FolderOpen, Mail, LayoutGrid, MousePointerClick, Search, Lightbulb } from "lucide-react"
+import { FileText, FolderOpen, Mail, LayoutGrid, MousePointerClick } from "lucide-react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -175,7 +175,7 @@ export default function UseCasesSection() {
           {useCases.map((useCase, index) => (
             <div
               key={useCase.id}
-              ref={(el) => (useCaseRefs.current[index] = el)}
+              ref={(el) => { useCaseRefs.current[index] = el; }}
               className={`relative flex flex-col ${
                 useCase.position === "right" ? "md:flex-row" : "md:flex-row-reverse"
               } items-center gap-8 md:gap-12`}

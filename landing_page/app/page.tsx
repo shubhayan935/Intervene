@@ -1,12 +1,12 @@
-import Link from "next/link"
-import { MousePointer2 } from "lucide-react"
-import HeroSection from "@/components/hero-section"
-import FeaturesGrid from "@/components/features-grid"
-import TestimonialsSection from "@/components/testimonials-section"
-import PricingTable from "@/components/pricing-table"
-import MouseEffect from "@/components/mouse-effect"
-import CompanyLogos from "@/components/company-logos"
-import UseCasesSection from "@/components/use-cases-section"
+import Link from 'next/link';
+import { MousePointer2 } from 'lucide-react';
+import HeroSection from '@/components/hero-section';
+import FeaturesGrid from '@/components/features-grid';
+import TestimonialsSection from '@/components/testimonials-section';
+import PricingTable from '@/components/pricing-table';
+import MouseEffect from '@/components/mouse-effect';
+import CompanyLogos from '@/components/company-logos';
+import UseCasesSection from '@/components/use-cases-section';
 
 export default function LandingPage() {
   return (
@@ -18,17 +18,23 @@ export default function LandingPage() {
             <span>INTERVENE</span>
           </Link>
           <nav className="hidden md:flex gap-6">
-            <Link href="#features" className="text-sm font-medium text-white/70 transition-colors hover:text-white">
+            <Link
+              href="#features"
+              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+            >
               Features
             </Link>
-            <Link href="#use-cases" className="text-sm font-medium text-white/70 transition-colors hover:text-white">
+            <Link
+              href="#use-cases"
+              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+            >
               Use Cases
             </Link>
-            <Link href="#testimonials" className="text-sm font-medium text-white/70 transition-colors hover:text-white">
+            <Link
+              href="#testimonials"
+              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+            >
               Testimonials
-            </Link>
-            <Link href="#pricing" className="text-sm font-medium text-white/70 transition-colors hover:text-white">
-              Pricing
             </Link>
           </nav>
           <div className="flex items-center gap-4">
@@ -47,19 +53,22 @@ export default function LandingPage() {
         <FeaturesGrid />
         <UseCasesSection />
         <TestimonialsSection />
-        <PricingTable />
       </main>
       <footer className="border-t border-white/10 bg-black py-6 md:py-12">
         <div className="container px-4 md:px-6">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-4">
-              <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+              <Link
+                href="/"
+                className="flex items-center gap-2 font-bold text-xl"
+              >
                 <MousePointer2 className="h-6 w-6 text-purple-500" />
                 <span>INTERVENE</span>
               </Link>
               <p className="text-sm text-white/70">
-                Tesla Autopilot for desktops. Built entirely on-device using Meta&apos;s Llama Stack for fast, private,
-                agentic task execution.
+                Autopilot for desktops. Built entirely on-device using
+                Meta&apos;s Llama Stack for fast, private, agentic task
+                execution.
               </p>
             </div>
             <div className="space-y-4">
@@ -145,5 +154,5 @@ export default function LandingPage() {
       </footer>
       <MouseEffect />
     </div>
-  )
+  );
 }

@@ -18,6 +18,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Create a status bar item with a square length for an icon
+        startBackend()
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         
         if let button = statusItem.button {
@@ -46,6 +47,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Set the application name for menu bar and dock
         // Note: The app icon for the dock is set through Info.plist and Assets.xcassets
         NSApp.setActivationPolicy(.regular) // Ensures it appears in the dock
+    }
+    
+    func applicationWillTerminate(_ notification: Notification) {
+        // Stop the backend when the app is closing
+        BackendManager.shared.stopBackend()
+    }
+        
+    // Start the FastAPI backend
+    private func startBackend() {
+        do {
+            try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: "/backend")
+        } catch {
+            print("Warning: Failed to set executable permissions: \(error)")
+            // Continue anyway as it might already be executable
+        }
+        print("starting backend from app delegate")
+        BackendManager.shared.startBackend()
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { completion in
+                    if case .failure(let error) = completion {
+                        print("Failed to start backend: \(error.localizedDescription)")
+                        // Show alert to user if needed
+                    }
+                },
+                receiveValue: { success in
+                    if success {
+                        print("Backend started successfully")
+                    } else {
+                        print("Backend failed to start properly")
+                        // Show alert to user if needed
+                    }
+                }
+            )
+            .store(in: &cancellables)
     }
     
     @objc func toggleOverlay() {

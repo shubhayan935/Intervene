@@ -34,21 +34,16 @@ export default function MouseEffect() {
   const trailElements = 5;
 
   // Pre-create all motion values at component top level
-  const trailMotionX = [
-    useMotionValue(0),
-    useMotionValue(0),
-    useMotionValue(0),
-    useMotionValue(0),
-    useMotionValue(0),
-  ];
-
-  const trailMotionY = [
-    useMotionValue(0),
-    useMotionValue(0),
-    useMotionValue(0),
-    useMotionValue(0),
-    useMotionValue(0),
-  ];
+  function useTrailMotionValues(length: number) {
+  const arr = [];
+  for (let i = 0; i < length; i++) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    arr.push(useMotionValue(0));
+  }
+  return arr;
+}
+  const trailMotionX = useTrailMotionValues(trailElements);
+  const trailMotionY = useTrailMotionValues(trailElements);
 
   // Pre-create all springs at component top level
   const trailSpringsX = [

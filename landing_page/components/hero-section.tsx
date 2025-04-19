@@ -1,10 +1,10 @@
 'use client';
 
 import { useRef } from 'react';
-import Image from 'next/image';
+
 import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, MousePointerClick } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export default function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -128,6 +128,7 @@ export default function HeroSection() {
         >
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative h-full w-full">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/demo.gif"
                 alt="Intervene desktop app interface"

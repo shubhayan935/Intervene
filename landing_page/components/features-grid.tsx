@@ -9,12 +9,6 @@ import {
   Calendar,
   ShieldCheck,
   BarChart3,
-  Shield,
-  Lightbulb,
-  Zap,
-  Search,
-  Clock,
-  Sparkles,
 } from 'lucide-react';
 
 const features = [

@@ -2,10 +2,7 @@ import Link from 'next/link';
 import { MousePointer2 } from 'lucide-react';
 import HeroSection from '@/components/hero-section';
 import FeaturesGrid from '@/components/features-grid';
-import TestimonialsSection from '@/components/testimonials-section';
-import PricingTable from '@/components/pricing-table';
 import MouseEffect from '@/components/mouse-effect';
-import CompanyLogos from '@/components/company-logos';
 import UseCasesSection from '@/components/use-cases-section';
 
 export default function LandingPage() {
@@ -30,6 +27,14 @@ export default function LandingPage() {
             >
               Use Cases
             </Link>
+            <Link
+              href="https://www.youtube.com/watch?v=HxsXosrdD0o"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+            >
+              Demo
+            </Link>
           </nav>
           <div className="flex items-center gap-4">
             <Link
@@ -47,103 +52,48 @@ export default function LandingPage() {
         <UseCasesSection />
       </main>
       <footer className="border-t border-white/10 bg-black py-6 md:py-12">
-        <div className="container px-4 md:px-6">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            <div className="space-y-4">
-              <Link
-                href="/"
-                className="flex items-center gap-2 font-bold text-xl"
-              >
-                <MousePointer2 className="h-6 w-6 text-purple-500" />
-                <span>INTERVENE</span>
-              </Link>
-              <p className="text-sm text-white/70">
-                Autopilot for desktops. Built entirely on-device using
-                Meta&apos;s Llama Stack for fast, private, agentic task
-                execution.
-              </p>
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Product</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    Features
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    Security
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    Roadmap
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Resources</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    Documentation
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    Guides
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    Support
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Company</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    Privacy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white">
-                    Terms
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 border-t border-white/10 pt-8 text-center text-sm text-white/70">
-            <p>© {new Date().getFullYear()} Intervene. All rights reserved.</p>
-          </div>
+        <div className="container flex flex-col items-center justify-center gap-4 px-4 text-center md:px-6">
+          <Link
+            href="/"
+            className="flex items-center gap-2 font-bold text-xl text-white"
+          >
+            <MousePointer2 className="h-6 w-6 text-purple-500" />
+            <span>INTERVENE</span>
+          </Link>
+          <nav className="flex flex-wrap justify-center gap-6 text-sm text-white/70">
+            <Link
+              href="#features"
+              className="hover:text-white transition-colors"
+            >
+              Features
+            </Link>
+            <Link
+              href="#use-cases"
+              className="hover:text-white transition-colors"
+            >
+              Use Cases
+            </Link>
+            <Link
+              href="https://www.youtube.com/watch?v=HxsXosrdD0o"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              Demo
+            </Link>
+            <Link
+              href="#download"
+              className="hover:text-white transition-colors"
+            >
+              Download
+            </Link>
+          </nav>
+          <p className="text-xs text-white/50 mt-4">
+            © {new Date().getFullYear()} Intervene. All rights reserved.
+          </p>
         </div>
       </footer>
+
       <MouseEffect />
     </div>
   );

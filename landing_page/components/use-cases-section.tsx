@@ -2,13 +2,7 @@
 
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import {
-  FileText,
-  FolderOpen,
-  Mail,
-  LayoutGrid,
-  MousePointerClick,
-} from 'lucide-react';
+import { FileText, FolderOpen, Mail, LayoutGrid } from 'lucide-react';
 
 const useCases = [
   {
@@ -119,7 +113,7 @@ export default function UseCasesSection() {
           animate={isInView ? 'visible' : 'hidden'}
           className="grid gap-12 md:grid-cols-2"
         >
-          {useCases.map((useCase, index) => (
+          {useCases.map(useCase => (
             <motion.div
               key={useCase.id}
               variants={itemVariants}

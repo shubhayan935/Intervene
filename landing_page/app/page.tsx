@@ -30,12 +30,6 @@ export default function LandingPage() {
             >
               Use Cases
             </Link>
-            <Link
-              href="#testimonials"
-              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
-            >
-              Testimonials
-            </Link>
           </nav>
           <div className="flex items-center gap-4">
             <Link
@@ -49,10 +43,8 @@ export default function LandingPage() {
       </header>
       <main className="flex-1">
         <HeroSection />
-        <CompanyLogos />
         <FeaturesGrid />
         <UseCasesSection />
-        <TestimonialsSection />
       </main>
       <footer className="border-t border-white/10 bg-black py-6 md:py-12">
         <div className="container px-4 md:px-6">

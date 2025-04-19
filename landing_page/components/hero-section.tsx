@@ -1,24 +1,27 @@
-"use client"
+'use client';
 
-import { useRef } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { motion, useScroll, useTransform } from "framer-motion"
-import { ArrowRight, MousePointerClick } from "lucide-react"
+import { useRef } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ArrowRight, MousePointerClick } from 'lucide-react';
 
 export default function HeroSection() {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end start"],
-  })
+    offset: ['start start', 'end start'],
+  });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9])
-  const y = useTransform(scrollYProgress, [0, 0.5], [0, 100])
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
+  const y = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
 
   return (
-    <div ref={containerRef} className="relative overflow-hidden py-20 md:py-32 lg:py-40">
+    <div
+      ref={containerRef}
+      className="relative overflow-hidden py-20 md:py-32 lg:py-40"
+    >
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-radial from-purple-900/20 via-black to-black" />
 
@@ -35,7 +38,7 @@ export default function HeroSection() {
         transition={{
           duration: 8,
           repeat: Number.POSITIVE_INFINITY,
-          repeatType: "reverse",
+          repeatType: 'reverse',
         }}
       />
 
@@ -48,12 +51,15 @@ export default function HeroSection() {
         transition={{
           duration: 10,
           repeat: Number.POSITIVE_INFINITY,
-          repeatType: "reverse",
+          repeatType: 'reverse',
         }}
       />
 
       <div className="container relative px-4 md:px-6">
-        <motion.div style={{ opacity, scale, y }} className="mx-auto max-w-3xl text-center">
+        <motion.div
+          style={{ opacity, scale, y }}
+          className="mx-auto max-w-3xl text-center"
+        >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -83,8 +89,9 @@ export default function HeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mt-6 text-lg text-white/70 md:text-xl"
           >
-            Intervene is an on-device autonomous desktop agent that takes over repetitive digital workflows — filling
-            forms, renaming files, drafting emails, organizing tabs, and more.
+            Intervene is an on-device autonomous desktop agent that takes over
+            repetitive digital workflows — filling forms, renaming files,
+            drafting emails, organizing tabs, and more.
           </motion.p>
 
           <motion.div
@@ -101,7 +108,9 @@ export default function HeroSection() {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
             <Link
-              href="#how-it-works"
+              href="https://www.youtube.com/watch?v=HxsXosrdD0o"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex h-12 items-center justify-center rounded-md border border-white/10 bg-white/5 px-8 text-sm font-medium text-white backdrop-blur transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20"
             >
               See how it works
@@ -130,15 +139,15 @@ export default function HeroSection() {
               <div className="absolute inset-0">
                 <motion.div
                   className="absolute"
-                  initial={{ x: "30%", y: "40%" }}
+                  initial={{ x: '30%', y: '40%' }}
                   animate={{
-                    x: ["30%", "60%", "45%", "70%", "30%"],
-                    y: ["40%", "30%", "60%", "50%", "40%"],
+                    x: ['30%', '60%', '45%', '70%', '30%'],
+                    y: ['40%', '30%', '60%', '50%', '40%'],
                   }}
                   transition={{
                     duration: 8,
                     repeat: Number.POSITIVE_INFINITY,
-                    repeatType: "loop",
+                    repeatType: 'loop',
                   }}
                 >
                   <MousePointerClick className="h-6 w-6 text-white drop-shadow-lg" />
@@ -160,7 +169,9 @@ export default function HeroSection() {
                 >
                   <div className="flex items-center gap-2">
                     <div className="h-3 w-3 rounded-full bg-green-500"></div>
-                    <p className="text-sm font-medium text-white">Renaming 24 files based on spreadsheet data...</p>
+                    <p className="text-sm font-medium text-white">
+                      Renaming 24 files based on spreadsheet data...
+                    </p>
                   </div>
                 </motion.div>
               </div>
@@ -169,5 +180,5 @@ export default function HeroSection() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

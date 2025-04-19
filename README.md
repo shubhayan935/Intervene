@@ -47,8 +47,8 @@ Built entirely on-device using Meta’s Llama Stack for fast, private, agentic t
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/your-org/intervene.git
-cd intervene
+git clone https://github.com/shubhayan935/Intervene.git
+cd Intervene
 ```
 
 ---
@@ -59,11 +59,10 @@ cd intervene
 - macOS
 - Xcode
 
-#### Run:
+#### Open and Run:
 
 ```bash
-cd macos-agent
-open Intervene.xcodeproj
+Intervene.xcodeproj
 ```
 
 Then press `Cmd+R` in Xcode.  
@@ -87,25 +86,11 @@ yarn dev           # or npm run dev
 
 ### 4. Run Ollama (Llama 3) Locally
 
-#### Install:
-
-```bash
-curl -fsSL https://ollama.com/install.sh | sh
-```
-
 #### Run:
 
 ```bash
 ollama run llama3
 ```
-
----
-
-## Demo Tips
-
-- Show side-by-side: manual vs. Copilot Mode
-- Include natural voice command: “Hey Copilot, archive last month’s invoices”
-- Add a visual overlay during automation mode (e.g. cursor color change)
 
 ---
 

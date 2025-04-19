@@ -128,54 +128,15 @@ export default function HeroSection() {
         >
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative h-full w-full">
-              <Image
-                src="/placeholder.svg?height=1080&width=1920"
+              <img
+                src="/demo.gif"
                 alt="Intervene desktop app interface"
                 width={1920}
                 height={1080}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
               />
 
-              {/* Animated cursor and UI elements overlay */}
-              <div className="absolute inset-0">
-                <motion.div
-                  className="absolute"
-                  initial={{ x: '30%', y: '40%' }}
-                  animate={{
-                    x: ['30%', '60%', '45%', '70%', '30%'],
-                    y: ['40%', '30%', '60%', '50%', '40%'],
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Number.POSITIVE_INFINITY,
-                    repeatType: 'loop',
-                  }}
-                >
-                  <MousePointerClick className="h-6 w-6 text-white drop-shadow-lg" />
-                </motion.div>
 
-                <motion.div
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg border border-white/20 bg-black/50 px-4 py-3 backdrop-blur-md"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{
-                    opacity: [0, 1, 1, 0],
-                    scale: [0.9, 1, 1, 0.9],
-                  }}
-                  transition={{
-                    duration: 4,
-                    delay: 2,
-                    repeat: Number.POSITIVE_INFINITY,
-                    repeatDelay: 4,
-                  }}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-full bg-green-500"></div>
-                    <p className="text-sm font-medium text-white">
-                      Renaming 24 files based on spreadsheet data...
-                    </p>
-                  </div>
-                </motion.div>
-              </div>
             </div>
           </div>
         </motion.div>

@@ -101,7 +101,8 @@ export default function HeroSection() {
             className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <Link
-              href="#download"
+              href="/intervene.zip"
+              download
               className="inline-flex h-12 items-center justify-center rounded-md bg-gradient-to-r from-purple-600 to-violet-600 px-8 text-sm font-medium text-white shadow-lg shadow-purple-900/20 transition-all hover:shadow-xl hover:shadow-purple-900/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-purple-500"
             >
               Download for macOS

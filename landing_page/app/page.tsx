@@ -38,7 +38,8 @@ export default function LandingPage() {
           </nav>
           <div className="flex items-center gap-4">
             <Link
-              href="#download"
+              href="/intervene.zip"
+              download
               className="inline-flex h-10 items-center justify-center rounded-md bg-gradient-to-r from-purple-600 to-violet-500 px-6 text-sm font-medium text-white shadow transition-colors hover:bg-gradient-to-r hover:from-purple-700 hover:to-violet-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-purple-500"
             >
               Get Started
@@ -82,14 +83,16 @@ export default function LandingPage() {
               Demo
             </Link>
             <Link
-              href="#download"
+              href="/intervene.zip"
+              download
               className="hover:text-white transition-colors"
             >
               Download
             </Link>
           </nav>
           <p className="text-xs text-white/50 mt-4">
-            © {new Date().getFullYear()} Intervene. All rights reserved.
+            Built with ❤️ by DG x SS x VSK. <br /> © {new Date().getFullYear()}{' '}
+            Intervene. All rights reserved.
           </p>
         </div>
       </footer>

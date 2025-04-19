@@ -1,58 +1,87 @@
 Intervene
+Autopilot for your desktop workflows
+Intervene is an on-device autonomous desktop agent that takes over repetitive tasks—filling forms, renaming files, drafting emails, organizing tabs, and more.
 
-TLDR: Tesla Autopilot for desktops
-
-Robin AI is an on-device autonomous desktop agent that takes over repetitive digital workflows — filling forms, renaming files, drafting emails, organizing tabs, etc.
-Just like Tesla Autopilot, you stay in control: touching the mouse or keyboard instantly returns full manual control.
+Just like Tesla Autopilot, you stay in control: touching the mouse or keyboard instantly halts the agent and returns full manual control.
 
 Built entirely on-device using Meta’s Llama Stack for fast, private, agentic task execution.
 
-Core Features
-Autonomous Mode for Desktop
+Features
+Autonomous Mode
+Executes scripted or inferred actions based on desktop context
 
-Run scripted or inferred actions (“rename all these files from this spreadsheet”, “extract info from these PDFs and fill a CRM”).
+Triggered by open tabs, folders, file names, etc.
 
-Automatically triggers based on context (e.g. open tabs, folders, file names).
+Executes actions when user is idle or confirms manually
 
-Local agent proposes actions, and executes when user confirms or is idle.
+Manual Takeover
+Mouse or keyboard input immediately halts automation
 
-Manual Takeover System
+Re-enable Copilot Mode via hotkey or voice
 
-Just move the mouse or press any key — agent halts instantly.
+Memory and Personalization
+Remembers recurring workflows (e.g. weekly status reports)
 
-Switch back into Copilot Mode via hotkey or voice.
+Adapts behavior per app (e.g. Slack, Figma, Finder)
 
-Memory & Context-Awareness
+Safety and Privacy
+No cloud or API calls—runs entirely on-device
 
-Remembers past workflows: e.g. “every Monday, generate status report from these folders.”
+Guardrails via Llama Safety API
 
-Can personalize agent behavior per user or even per app (Slack vs Figma vs file explorer).
+Manual confirmation required for any destructive action
 
-Safety & Guardrails
-
-Llama Safety API ensures no files/emails/data are sent or altered without local confirmation.
-
-Fully sandboxed with permission checks.
-
-Efficiency Reporting
-
-“This week Copilot Mode saved you 3.2 hours on repetitive tasks.”
+Reporting
+Tracks time saved per week from automated workflows
 
 Llama Stack Usage
-Inference API: for command parsing, UI understanding (e.g. interpreting file types, buttons, tab labels).
+Inference API: parses commands, understands UI structure
 
-Memory API: to track repeated behavior, preferences, prior agent “habits”.
+Memory API: tracks recurring behaviors and preferences
 
-Safety API: to prevent dangerous actions, enforce manual opt-in, redaction before logging.
+Safety API: enforces local-only execution and redacts sensitive data
 
-Quantifiable Edge
-🖱️ 60% faster completion of repetitive workflows
-🧠 Reduces context switching by 45%
-🔒 100% of actions done locally with no cloud access
+Setup Instructions
+1. Clone the Repo
+git clone https://github.com/your-org/intervene.git
+cd intervene
+2. Run macOS Swift Agent
+Requirements:
+macOS
 
-Bonus Twist for Demos
-Show side-by-side: you doing the task manually vs. Copilot Mode doing it for you
+Xcode
 
-Add natural speech interface ("Hey Copilot, archive all invoices from last month")
+Run:
+cd macos-agent
+open Intervene.xcodeproj
+Then press Cmd+R in Xcode.
+Make sure to grant accessibility and automation permissions in System Settings.
 
-Visual overlay (e.g. cursor turns blue during agent mode; red on override)
+3. Run Backend Server
+Requirements:
+Node.js v18+
+
+Yarn or npm
+
+cd backend
+yarn install       # or npm install
+yarn dev           # or npm run dev
+4. Run Ollama (Llama 3) Locally
+Install:
+curl -fsSL https://ollama.com/install.sh | sh
+Run:
+ollama run llama3
+Demo Tips
+Show side-by-side: manual vs. Copilot Mode
+
+Include natural voice command: “Hey Copilot, archive last month’s invoices”
+
+Add a visual overlay during automation mode (e.g. cursor color change)
+
+Authors
+Daniel Gao
+Shubhayan Srivastava
+Vishnu Kadaba
+
+Built for the 8VC Llama Stack Hackathon
+

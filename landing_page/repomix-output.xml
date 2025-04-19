@@ -88,6 +88,11 @@ This section contains the contents of the repository's files.
   --font-mono: var(--font-geist-mono);
 }
 
+.container {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -106,6 +111,7 @@ body {
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -129,6 +135,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Analytics />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -140,15 +147,15 @@ export default function RootLayout({
 </file>
 
 <file path="app/page.tsx">
-import Link from "next/link"
-import { MousePointer2 } from "lucide-react"
-import HeroSection from "@/components/hero-section"
-import FeaturesGrid from "@/components/features-grid"
-import TestimonialsSection from "@/components/testimonials-section"
-import PricingTable from "@/components/pricing-table"
-import MouseEffect from "@/components/mouse-effect"
-import CompanyLogos from "@/components/company-logos"
-import UseCasesSection from "@/components/use-cases-section"
+import Link from 'next/link';
+import { MousePointer2 } from 'lucide-react';
+import HeroSection from '@/components/hero-section';
+import FeaturesGrid from '@/components/features-grid';
+import TestimonialsSection from '@/components/testimonials-section';
+import PricingTable from '@/components/pricing-table';
+import MouseEffect from '@/components/mouse-effect';
+import CompanyLogos from '@/components/company-logos';
+import UseCasesSection from '@/components/use-cases-section';
 
 export default function LandingPage() {
   return (
@@ -160,17 +167,17 @@ export default function LandingPage() {
             <span>INTERVENE</span>
           </Link>
           <nav className="hidden md:flex gap-6">
-            <Link href="#features" className="text-sm font-medium text-white/70 transition-colors hover:text-white">
+            <Link
+              href="#features"
+              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+            >
               Features
             </Link>
-            <Link href="#use-cases" className="text-sm font-medium text-white/70 transition-colors hover:text-white">
+            <Link
+              href="#use-cases"
+              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+            >
               Use Cases
-            </Link>
-            <Link href="#testimonials" className="text-sm font-medium text-white/70 transition-colors hover:text-white">
-              Testimonials
-            </Link>
-            <Link href="#pricing" className="text-sm font-medium text-white/70 transition-colors hover:text-white">
-              Pricing
             </Link>
           </nav>
           <div className="flex items-center gap-4">
@@ -185,23 +192,24 @@ export default function LandingPage() {
       </header>
       <main className="flex-1">
         <HeroSection />
-        <CompanyLogos />
         <FeaturesGrid />
         <UseCasesSection />
-        <TestimonialsSection />
-        <PricingTable />
       </main>
       <footer className="border-t border-white/10 bg-black py-6 md:py-12">
         <div className="container px-4 md:px-6">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-4">
-              <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+              <Link
+                href="/"
+                className="flex items-center gap-2 font-bold text-xl"
+              >
                 <MousePointer2 className="h-6 w-6 text-purple-500" />
                 <span>INTERVENE</span>
               </Link>
               <p className="text-sm text-white/70">
-                Tesla Autopilot for desktops. Built entirely on-device using Meta's Llama Stack for fast, private,
-                agentic task execution.
+                Autopilot for desktops. Built entirely on-device using
+                Meta&apos;s Llama Stack for fast, private, agentic task
+                execution.
               </p>
             </div>
             <div className="space-y-4">
@@ -287,7 +295,7 @@ export default function LandingPage() {
       </footer>
       <MouseEffect />
     </div>
-  )
+  );
 }
 </file>
 
@@ -357,10 +365,10 @@ export default function CompanyLogos() {
 </file>
 
 <file path="components/features-grid.tsx">
-"use client"
+'use client';
 
-import { useRef } from "react"
-import { motion, useInView } from "framer-motion"
+import { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 import {
   MousePointer2,
   Cpu,
@@ -374,67 +382,72 @@ import {
   Shield,
   Clock,
   Sparkles,
-} from "lucide-react"
+} from 'lucide-react';
 
 const features = [
   {
-    title: "Autonomous Mode",
+    title: 'Autonomous Mode',
     description:
-      "Run scripted or inferred actions like renaming files from spreadsheets or extracting info from PDFs to fill a CRM.",
+      'Run scripted or inferred actions like renaming files from spreadsheets or extracting info from PDFs to fill a CRM.',
     icon: MousePointer2,
-    color: "from-purple-500/20 to-violet-500/20",
-    textColor: "text-purple-400",
+    color: 'from-purple-500/20 to-violet-500/20',
+    textColor: 'text-purple-400',
   },
   {
-    title: "Context-Aware Triggers",
-    description: "Automatically triggers based on context like open tabs, folders, and file names.",
+    title: 'Context-Aware Triggers',
+    description:
+      'Automatically triggers based on context like open tabs, folders, and file names.',
     icon: Cpu,
-    color: "from-blue-500/20 to-indigo-500/20",
-    textColor: "text-blue-400",
+    color: 'from-blue-500/20 to-indigo-500/20',
+    textColor: 'text-blue-400',
   },
   {
-    title: "Manual Takeover",
-    description: "Just move the mouse or press any key — agent halts instantly. Switch back via hotkey or voice.",
+    title: 'Manual Takeover',
+    description:
+      'Just move the mouse or press any key — agent halts instantly. Switch back via hotkey or voice.',
     icon: KeyRound,
-    color: "from-green-500/20 to-emerald-500/20",
-    textColor: "text-green-400",
+    color: 'from-green-500/20 to-emerald-500/20',
+    textColor: 'text-green-400',
   },
   {
-    title: "Memory & Context",
-    description: 'Remembers past workflows: e.g. "every Monday, generate status report from these folders."',
+    title: 'Memory & Context',
+    description:
+      'Remembers past workflows: e.g. "every Monday, generate status report from these folders."',
     icon: Calendar,
-    color: "from-amber-500/20 to-yellow-500/20",
-    textColor: "text-amber-400",
+    color: 'from-amber-500/20 to-yellow-500/20',
+    textColor: 'text-amber-400',
   },
   {
-    title: "Safety & Guardrails",
-    description: "Llama Safety API ensures no files/emails/data are sent or altered without local confirmation.",
+    title: 'Safety & Guardrails',
+    description:
+      'Llama Safety API ensures no files/emails/data are sent or altered without local confirmation.',
     icon: ShieldCheck,
-    color: "from-red-500/20 to-rose-500/20",
-    textColor: "text-red-400",
+    color: 'from-red-500/20 to-rose-500/20',
+    textColor: 'text-red-400',
   },
   {
-    title: "Efficiency Reporting",
-    description: '"This week Copilot Mode saved you 3.2 hours on repetitive tasks."',
+    title: 'Efficiency Reporting',
+    description:
+      '"This week Copilot Mode saved you 3.2 hours on repetitive tasks."',
     icon: BarChart3,
-    color: "from-indigo-500/20 to-blue-500/20",
-    textColor: "text-indigo-400",
+    color: 'from-indigo-500/20 to-blue-500/20',
+    textColor: 'text-indigo-400',
   },
-]
+];
 
 // Categories like in the screenshots
 const categories = [
-  { name: "Security", icon: Shield, color: "bg-blue-900/30" },
-  { name: "Strategy", icon: Lightbulb, color: "bg-purple-900/30" },
-  { name: "Product", icon: Zap, color: "bg-violet-900/30" },
-  { name: "People", icon: Search, color: "bg-teal-900/30" },
-  { name: "Design", icon: Sparkles, color: "bg-pink-900/30" },
-  { name: "Sales", icon: Clock, color: "bg-indigo-900/30" },
-]
+  { name: 'Security', icon: Shield, color: 'bg-blue-900/30' },
+  { name: 'Strategy', icon: Lightbulb, color: 'bg-purple-900/30' },
+  { name: 'Product', icon: Zap, color: 'bg-violet-900/30' },
+  { name: 'People', icon: Search, color: 'bg-teal-900/30' },
+  { name: 'Design', icon: Sparkles, color: 'bg-pink-900/30' },
+  { name: 'Sales', icon: Clock, color: 'bg-indigo-900/30' },
+];
 
 export default function FeaturesGrid() {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, amount: 0.2 })
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -444,7 +457,7 @@ export default function FeaturesGrid() {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -455,7 +468,7 @@ export default function FeaturesGrid() {
         duration: 0.5,
       },
     },
-  }
+  };
 
   return (
     <section id="features" className="relative py-20 md:py-32">
@@ -471,7 +484,7 @@ export default function FeaturesGrid() {
         transition={{
           duration: 8,
           repeat: Number.POSITIVE_INFINITY,
-          repeatType: "reverse",
+          repeatType: 'reverse',
         }}
       />
 
@@ -484,7 +497,7 @@ export default function FeaturesGrid() {
         transition={{
           duration: 10,
           repeat: Number.POSITIVE_INFINITY,
-          repeatType: "reverse",
+          repeatType: 'reverse',
         }}
       />
 
@@ -501,13 +514,14 @@ export default function FeaturesGrid() {
           </motion.div>
 
           <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Tesla Autopilot for your{" "}
+            Autopilot for your{' '}
             <span className="bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">
               desktop workflows
             </span>
           </h2>
           <p className="mt-4 text-lg text-white/70">
-            Built entirely on-device using Meta's Llama Stack for fast, private, agentic task execution.
+            Built entirely on-device using Meta&apos;s Llama Stack for fast,
+            private, agentic task execution.
           </p>
         </div>
 
@@ -539,7 +553,7 @@ export default function FeaturesGrid() {
           <motion.div
             variants={containerVariants}
             initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
+            animate={isInView ? 'visible' : 'hidden'}
             className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
           >
             {features.map((feature, index) => (
@@ -560,7 +574,11 @@ export default function FeaturesGrid() {
                   <feature.icon className={`h-6 w-6 ${feature.textColor}`} />
                 </div>
 
-                <h3 className={`relative mb-2 text-xl font-bold ${feature.textColor}`}>{feature.title}</h3>
+                <h3
+                  className={`relative mb-2 text-xl font-bold ${feature.textColor}`}
+                >
+                  {feature.title}
+                </h3>
                 <p className="relative text-white/70">{feature.description}</p>
 
                 {/* Animated border on hover */}
@@ -569,47 +587,9 @@ export default function FeaturesGrid() {
             ))}
           </motion.div>
         </div>
-
-        {/* Email problem section like in the screenshots */}
-        <div className="mt-32">
-          <div className="mx-auto max-w-4xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-              viewport={{ once: true }}
-              className="text-center"
-            >
-              <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
-                Desktop tasks are the{" "}
-                <span className="bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
-                  biggest problem
-                </span>
-                <br />
-                <span className="bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">
-                  hiding in plain sight
-                </span>
-              </h2>
-
-              <p className="mt-8 text-xl text-white/80">
-                We all spend hours on repetitive tasks. But we often get distracted, make mistakes, and waste time.
-              </p>
-              <p className="mt-4 text-xl text-white/80">
-                We then end up losing focus, blocking our productivity, and missing our goals.
-              </p>
-
-              <div className="mt-12">
-                <p className="text-xl text-white/80">
-                  It's not anybody's fault. Desktop workflows haven't changed in decades.
-                </p>
-                <p className="mt-2 text-xl text-white/80">With Intervene, this all changes.</p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
       </div>
     </section>
-  )
+  );
 }
 </file>
 
@@ -792,85 +772,106 @@ export default function HeroSection() {
 <file path="components/mouse-effect.tsx">
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import { motion, useSpring, useMotionValue } from "framer-motion"
 
 export default function MouseEffect() {
+  // Create motion values at the top level of the component
   const cursorX = useMotionValue(0)
   const cursorY = useMotionValue(0)
-
-  // Create smoother spring-based following for the cursor effects
+  
+  // Create spring configs
   const springConfig = { damping: 25, stiffness: 300 }
+  
+  // Create springs at the top level
   const cursorXSpring = useSpring(cursorX, springConfig)
   const cursorYSpring = useSpring(cursorY, springConfig)
-
+  
   // For the larger glow effect
   const glowX = useSpring(cursorX, { ...springConfig, damping: 40, stiffness: 100 })
   const glowY = useSpring(cursorY, { ...springConfig, damping: 40, stiffness: 100 })
-
-  // For the trail effect
-  const trailElements = 5
-  const trailRefs = useRef(
-    Array.from({ length: trailElements }).map(() => ({
-      x: 0,
-      y: 0,
-    })),
-  )
-
-  const trailXMVs = useRef(Array.from({ length: trailElements }).map(() => useMotionValue(0)))
-  const trailYMVs = useRef(Array.from({ length: trailElements }).map(() => useMotionValue(0)))
-
-  const trailXSprings = useRef(
-    Array.from({ length: trailElements }).map((_, i) => useSpring(trailXMVs.current[i], springConfig)),
-  )
-  const trailYSprings = useRef(
-    Array.from({ length: trailElements }).map((_, i) => useSpring(trailYMVs.current[i], springConfig)),
-  )
-
+  
   const [cursorVariant, setCursorVariant] = useState("default")
   const [isHovering, setIsHovering] = useState(false)
-
+  
+  // For the trail effect
+  const trailElements = 5
+  
+  // Pre-create all motion values at component top level
+  const trailMotionX = [
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0)
+  ]
+  
+  const trailMotionY = [
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0),
+    useMotionValue(0)
+  ]
+  
+  // Pre-create all springs at component top level
+  const trailSpringsX = [
+    useSpring(trailMotionX[0], { ...springConfig, stiffness: 300 - 0 * 40, damping: 20 + 0 * 5 }),
+    useSpring(trailMotionX[1], { ...springConfig, stiffness: 300 - 1 * 40, damping: 20 + 1 * 5 }),
+    useSpring(trailMotionX[2], { ...springConfig, stiffness: 300 - 2 * 40, damping: 20 + 2 * 5 }),
+    useSpring(trailMotionX[3], { ...springConfig, stiffness: 300 - 3 * 40, damping: 20 + 3 * 5 }),
+    useSpring(trailMotionX[4], { ...springConfig, stiffness: 300 - 4 * 40, damping: 20 + 4 * 5 })
+  ]
+  
+  const trailSpringsY = [
+    useSpring(trailMotionY[0], { ...springConfig, stiffness: 300 - 0 * 40, damping: 20 + 0 * 5 }),
+    useSpring(trailMotionY[1], { ...springConfig, stiffness: 300 - 1 * 40, damping: 20 + 1 * 5 }),
+    useSpring(trailMotionY[2], { ...springConfig, stiffness: 300 - 2 * 40, damping: 20 + 2 * 5 }),
+    useSpring(trailMotionY[3], { ...springConfig, stiffness: 300 - 3 * 40, damping: 20 + 3 * 5 }),
+    useSpring(trailMotionY[4], { ...springConfig, stiffness: 300 - 4 * 40, damping: 20 + 4 * 5 })
+  ]
+  
   useEffect(() => {
     const mouseMove = (e: MouseEvent) => {
       cursorX.set(e.clientX)
       cursorY.set(e.clientY)
-
+      
       // Update trail positions with delay
       setTimeout(() => {
-        trailRefs.current.forEach((trail, i) => {
-          trailXMVs.current[i].set(e.clientX)
-          trailYMVs.current[i].set(e.clientY)
-        })
+        for (let i = 0; i < trailElements; i++) {
+          trailMotionX[i].set(e.clientX)
+          trailMotionY[i].set(e.clientY)
+        }
       }, 100) // Slight delay for trail effect
     }
-
+    
     window.addEventListener("mousemove", mouseMove)
-
+    
     return () => {
       window.removeEventListener("mousemove", mouseMove)
     }
-  }, [cursorX, cursorY])
-
+  }, [cursorX, cursorY, trailMotionX, trailMotionY]) // Added missing dependencies
+  
   useEffect(() => {
     const interactiveElements = document.querySelectorAll(
-      "a, button, h1, h2, h3, h4, h5, h6, input, [role='button'], .interactive",
+      "a, button, h1, h2, h3, h4, h5, h6, input, [role='button'], .interactive"
     )
-
+    
     const mouseEnter = () => {
       setCursorVariant("hover")
       setIsHovering(true)
     }
-
+    
     const mouseLeave = () => {
       setCursorVariant("default")
       setIsHovering(false)
     }
-
+    
     interactiveElements.forEach((element) => {
       element.addEventListener("mouseenter", mouseEnter)
       element.addEventListener("mouseleave", mouseLeave)
     })
-
+    
     return () => {
       interactiveElements.forEach((element) => {
         element.removeEventListener("mouseenter", mouseEnter)
@@ -878,7 +879,7 @@ export default function MouseEffect() {
       })
     }
   }, [])
-
+  
   const variants = {
     default: {
       height: 32,
@@ -894,7 +895,7 @@ export default function MouseEffect() {
       mixBlendMode: "screen" as const,
     },
   }
-
+  
   return (
     <>
       {/* Main cursor */}
@@ -915,7 +916,7 @@ export default function MouseEffect() {
           mass: 0.5,
         }}
       />
-
+      
       {/* Cursor glow effect */}
       <motion.div
         className="pointer-events-none fixed left-0 top-0 z-40 h-40 w-40 rounded-full bg-gradient-radial from-purple-500/20 via-violet-500/10 to-transparent blur-xl"
@@ -932,15 +933,15 @@ export default function MouseEffect() {
           scale: { duration: 0.4 },
         }}
       />
-
+      
       {/* Cursor trails */}
-      {trailRefs.current.map((trail, i) => (
+      {Array.from({ length: trailElements }).map((_, i) => (
         <motion.div
           key={i}
           className="pointer-events-none fixed left-0 top-0 z-30 h-2 w-2 rounded-full bg-purple-400"
           style={{
-            x: trailXSprings.current[i],
-            y: trailYSprings.current[i],
+            x: trailSpringsX[i],
+            y: trailSpringsY[i],
             translateX: "-50%",
             translateY: "-50%",
             opacity: 0.3 - i * 0.05,
@@ -955,7 +956,7 @@ export default function MouseEffect() {
           }}
         />
       ))}
-
+      
       {/* Magnetic effect for buttons - applied via CSS */}
       <style jsx global>{`
         a, button, .magnetic {
@@ -1064,7 +1065,7 @@ export default function PricingTable() {
               pricing
             </span>
           </h2>
-          <p className="mt-4 text-lg text-white/70">Choose the plan that's right for you or your team</p>
+          <p className="mt-4 text-lg text-white/70">Choose the plan that&apos;s right for you or your team</p>
         </div>
 
         <div ref={ref} className="mt-16">
@@ -1229,7 +1230,7 @@ export default function TestimonialsSection() {
                     <Star key={i} className="h-4 w-4 fill-purple-500 text-purple-500" />
                   ))}
                 </div>
-                <p className="mb-4 text-white/90">"{testimonial.quote}"</p>
+                <p className="mb-4 text-white/90">&quot;{testimonial.quote}&quot;</p>
                 <div className="flex items-center gap-3">
                   <Image
                     src={testimonial.avatar || "/placeholder.svg"}
@@ -1260,7 +1261,7 @@ export default function TestimonialsSection() {
 import { useEffect, useRef } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { FileText, FolderOpen, Mail, LayoutGrid, MousePointerClick, Search, Lightbulb } from "lucide-react"
+import { FileText, FolderOpen, Mail, LayoutGrid, MousePointerClick } from "lucide-react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -1432,7 +1433,7 @@ export default function UseCasesSection() {
           {useCases.map((useCase, index) => (
             <div
               key={useCase.id}
-              ref={(el) => (useCaseRefs.current[index] = el)}
+              ref={(el) => { useCaseRefs.current[index] = el; }}
               className={`relative flex flex-col ${
                 useCase.position === "right" ? "md:flex-row" : "md:flex-row-reverse"
               } items-center gap-8 md:gap-12`}
@@ -1453,7 +1454,7 @@ export default function UseCasesSection() {
 
                 {/* Animated UI elements specific to each use case */}
                 {useCase.id === "form-filling" && (
-                  <div className="mt-6 flex items-center gap-4">
+                  <div className="mt-10 flex items-center gap-4">
                     <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
                       <MousePointerClick className="h-5 w-5 text-white/70" />
                     </div>
@@ -1464,7 +1465,7 @@ export default function UseCasesSection() {
                 )}
 
                 {useCase.id === "file-organization" && (
-                  <div className="mt-6 flex items-center gap-4">
+                  <div className="mt-10 flex items-center gap-4">
                     <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
                       <FolderOpen className="h-5 w-5 text-white/70" />
                     </div>
@@ -1475,7 +1476,7 @@ export default function UseCasesSection() {
                 )}
 
                 {useCase.id === "email-management" && (
-                  <div className="mt-6 flex items-center gap-4">
+                  <div className="mt-10 flex items-center gap-4">
                     <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
                       <Mail className="h-5 w-5 text-white/70" />
                     </div>
@@ -1486,7 +1487,7 @@ export default function UseCasesSection() {
                 )}
 
                 {useCase.id === "tab-organization" && (
-                  <div className="mt-6 flex items-center gap-4">
+                  <div className="mt-10 flex items-center gap-4">
                     <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
                       <LayoutGrid className="h-5 w-5 text-white/70" />
                     </div>
@@ -1552,7 +1553,7 @@ export default function UseCasesSection() {
         </div>
 
         {/* Floating UI elements */}
-        <div className="pointer-events-none absolute top-1/3 left-10 h-20 w-20 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
+        {/* <div className="pointer-events-none absolute top-1/3 left-10 h-20 w-20 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
           <div className="absolute inset-0 flex items-center justify-center">
             <Search className="h-8 w-8 text-white/50" />
           </div>
@@ -1562,7 +1563,7 @@ export default function UseCasesSection() {
           <div className="absolute inset-0 flex items-center justify-center">
             <Lightbulb className="h-8 w-8 text-white/50" />
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   )
@@ -1674,12 +1675,14 @@ export default nextConfig;
     "lint": "next lint"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.5.0",
     "framer-motion": "^12.7.3",
     "gsap": "^3.12.7",
     "lucide-react": "^0.488.0",
     "next": "15.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "repomix": "^0.3.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

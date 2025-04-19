@@ -165,3 +165,4 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // The execution status will be updated via the WebSocket connection
     }
 }
+
